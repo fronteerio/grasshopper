@@ -1,0 +1,48 @@
+{
+  "name": "grasshopper",
+  "description": "Grasshopper Event Engine",
+  "version": "0.0.1",
+  "author": {
+    "name": "Fronteer LTD"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/fronteerio/grasshopper.git"
+  },
+  "bugs": {
+    "url": "https://github.com/fronteerio/grasshopper/issues"
+  },
+  "licenses": [
+    {
+      "type": "AGPLv3",
+      "url": "http://opensource.org/licenses/AGPL-3.0"
+    }
+  ],
+  "dependencies": {
+    "gh-apps": "",
+    "gh-calendar": "",
+    "gh-events": "",
+    "gh-groups": "",
+    "gh-content": "",
+    "gh-orgunit": "",
+    "gh-search": "",
+    "gh-series": "",
+    "gh-tenants": "",
+    "gh-users": ""
+  },
+  "bundleDependencies": [
+    "gh-apps",
+    "gh-calendar",
+    "gh-events",
+    "gh-groups",
+    "gh-content",
+    "gh-orgunit",
+    "gh-search",
+    "gh-series",
+    "gh-tenants",
+    "gh-users"
+  ],
+  "engines": {
+    "node": ">=0.10"
+  }
+}
