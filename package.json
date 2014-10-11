@@ -19,23 +19,30 @@
     }
   ],
   "dependencies": {
+    "body-parser": "latest",
+    "bunyan": "latest",
+    "bunyan-prettystream": "latest",
+    "cookie-parser": "latest",
+    "cookie-session": "latest",
+    "express": "latest",
     "gh-apps": "",
     "gh-calendar": "",
     "gh-events": "",
     "gh-groups": "",
-    "gh-content": "",
     "gh-orgunit": "",
     "gh-search": "",
     "gh-series": "",
     "gh-tenants": "",
-    "gh-users": ""
+    "gh-users": "",
+    "lodash": "latest",
+    "pg": "latest",
+    "sequelize": "latest"
   },
   "bundleDependencies": [
     "gh-apps",
     "gh-calendar",
     "gh-events",
     "gh-groups",
-    "gh-content",
     "gh-orgunit",
     "gh-search",
     "gh-series",
