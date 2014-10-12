@@ -11,4 +11,5 @@ node_modules/*
 !node_modules/gh-orgunit
 !node_modules/gh-search
 !node_modules/gh-series
+!node_modules/gh-tenants
 !node_modules/gh-users
