@@ -7,9 +7,7 @@ node_modules/*
 !node_modules/gh-core
 !node_modules/gh-events
 !node_modules/gh-groups
-!node_modules/gh-content
 !node_modules/gh-orgunit
 !node_modules/gh-search
 !node_modules/gh-series
-!node_modules/gh-tenants
 !node_modules/gh-users

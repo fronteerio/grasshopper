@@ -32,7 +32,6 @@
     "gh-orgunit": "",
     "gh-search": "",
     "gh-series": "",
-    "gh-tenants": "",
     "gh-users": "",
     "lodash": "latest",
     "pg": "latest",
@@ -46,7 +45,6 @@
     "gh-orgunit",
     "gh-search",
     "gh-series",
-    "gh-tenants",
     "gh-users"
   ],
   "engines": {
