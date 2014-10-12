@@ -3,6 +3,7 @@
 
 node_modules/*
 !node_modules/gh-apps
+!node_modules/gh-auth
 !node_modules/gh-calendar
 !node_modules/gh-core
 !node_modules/gh-events

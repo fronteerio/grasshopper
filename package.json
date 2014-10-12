@@ -26,6 +26,7 @@
     "cookie-session": "latest",
     "express": "latest",
     "gh-apps": "",
+    "gh-auth": "",
     "gh-calendar": "",
     "gh-events": "",
     "gh-groups": "",
@@ -39,6 +40,7 @@
   },
   "bundleDependencies": [
     "gh-apps",
+    "gh-auth",
     "gh-calendar",
     "gh-events",
     "gh-groups",
