@@ -5,29 +5,38 @@ Grasshopper Event Engine
 
 # Setup
 
-1. Install postgres
+This documentation assumes you're running OS X with homebrew.
+
+
+##  Postgres
 ```
+# Install postgres
 brew install postgresql
-```
 
-2. Create a database and user in postgres
+# Start postgres
+postgres -D /usr/local/var/postgres
 
-```
+# Create a database and user
 psql template1
-template1=# CREATE USER grasshopper WITH PASSWORD 'grasshopper';
-CREATE ROLE
-template1=# CREATE DATABASE grasshopper;
-CREATE DATABASE
-template1=# GRANT ALL PRIVILEGES ON DATABASE grasshopper TO grasshopper
+    template1=# CREATE USER grasshopper WITH PASSWORD 'grasshopper';
+        CREATE ROLE
+    template1=# CREATE DATABASE grasshopper;
+        CREATE DATABASE
+    template1=# GRANT ALL PRIVILEGES ON DATABASE grasshopper TO grasshopper
 ```
 
-3. Install the dependencies
+
+## Grasshopper
 ```
+# Clone the application somewhere
+git clone git://github.com/fronteerio/grasshopper
+
+# Install the npm dependencies
 npm install
-```
 
-4. Run the app server
-```
+# Install the grunt CLI (globally)
+npm install -g grunt-cli
+
+# Run the application
 node app
 ```
-

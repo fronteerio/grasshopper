@@ -32,10 +32,7 @@ config.db = {
     'username': 'grasshopper',
     'password': 'grasshopper',
     'dialect': 'postgres',
-    'port': 5432,
-
-    // Disable sequelize logger
-    'logging': function() {}
+    'port': 5432
 };
 
 // Pretty-print the logs to standard out
@@ -64,4 +61,11 @@ config.log = {
  */
 config.cookie = {
     'secret': 'The only reason for time is so that everything doesn\'t happen at once.'
+};
+
+/*!
+ * The servers related configuration
+ */
+config.servers = {
+    'adminHostname': 'admin.grasshopper.com'
 };
