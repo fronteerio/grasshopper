@@ -12,6 +12,7 @@ node_modules/*
 !node_modules/gh-events
 !node_modules/gh-groups
 !node_modules/gh-orgunit
+!node_modules/gh-picture
 !node_modules/gh-search
 !node_modules/gh-series
 !node_modules/gh-tenants
