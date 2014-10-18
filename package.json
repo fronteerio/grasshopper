@@ -43,6 +43,7 @@
     "gh-apps",
     "gh-auth",
     "gh-calendar",
+    "gh-config",
     "gh-events",
     "gh-groups",
     "gh-orgunit",
