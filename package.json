@@ -19,6 +19,7 @@
     }
   ],
   "dependencies": {
+    "bcryptjs": "latest",
     "body-parser": "latest",
     "bunyan": "latest",
     "bunyan-prettystream": "latest",
