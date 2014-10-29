@@ -42,6 +42,7 @@
     "gh-tenants": "",
     "gh-users": "",
     "lodash": "latest",
+    "passport": "latest",
     "pg": "latest",
     "readdirp": "latest",
     "restjsdoc": "latest",
