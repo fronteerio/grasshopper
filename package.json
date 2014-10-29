@@ -37,6 +37,7 @@
     "gh-groups": "",
     "gh-orgunit": "",
     "gh-picture": "",
+    "gh-rest": "",
     "gh-search": "",
     "gh-series": "",
     "gh-tenants": "",
@@ -47,6 +48,17 @@
     "readdirp": "latest",
     "restjsdoc": "latest",
     "sequelize": "latest"
+  },
+  "devDependencies": {
+    "coveralls": "latest",
+    "grunt": "latest",
+    "grunt-cli": "latest",
+    "grunt-contrib-clean": "latest",
+    "grunt-contrib-jshint": "latest",
+    "grunt-mocha-hack": "latest",
+    "grunt-text-replace": "latest",
+    "istanbul": "latest",
+    "shelljs": "latest"
   },
   "bundleDependencies": [
     "gh-apps",
@@ -60,6 +72,7 @@
     "gh-groups",
     "gh-orgunit",
     "gh-picture",
+    "gh-rest",
     "gh-search",
     "gh-series",
     "gh-tenants",
