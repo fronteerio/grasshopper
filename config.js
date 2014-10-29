@@ -67,5 +67,7 @@ config.cookie = {
  * The servers related configuration
  */
 config.servers = {
-    'adminHostname': 'admin.grasshopper.com'
+    'adminHostname': 'admin.grasshopper.com',
+    'adminPort': 2000,
+    'appsPort': 2001
 };
