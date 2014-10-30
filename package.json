@@ -41,6 +41,7 @@
     "gh-search": "",
     "gh-series": "",
     "gh-tenants": "",
+    "gh-tests": "",
     "gh-users": "",
     "lodash": "latest",
     "passport": "latest",
@@ -76,6 +77,7 @@
     "gh-search",
     "gh-series",
     "gh-tenants",
+    "gh-tests",
     "gh-users"
   ],
   "engines": {
