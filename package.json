@@ -45,9 +45,12 @@
     "gh-users": "",
     "lodash": "latest",
     "passport": "latest",
+    "passport-local": "latest",
     "pg": "latest",
     "readdirp": "latest",
     "restjsdoc": "latest",
+    "request": "latest",
+    "validator": "1.1.3",
     "sequelize": "latest"
   },
   "devDependencies": {
