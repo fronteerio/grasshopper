@@ -22,7 +22,12 @@ psql template1
         CREATE ROLE
     template1=# CREATE DATABASE grasshopper;
         CREATE DATABASE
-    template1=# GRANT ALL PRIVILEGES ON DATABASE grasshopper TO grasshopper
+    template1=# CREATE DATABASE grasshoppertest;
+        CREATE DATABASE
+    template1=# GRANT ALL PRIVILEGES ON DATABASE grasshopper TO grasshopper;
+        GRANT
+    template1=# GRANT ALL PRIVILEGES ON DATABASE grasshoppertest TO grasshopper;
+        GRANT
 ```
 
 
