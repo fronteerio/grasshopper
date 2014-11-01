@@ -2,6 +2,7 @@
 *.log
 
 node_modules/*
+!node_modules/gh-admins
 !node_modules/gh-apps
 !node_modules/gh-auth
 !node_modules/gh-calendar
