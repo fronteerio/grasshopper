@@ -1,0 +1,23 @@
+language: node_js
+node_js:
+  - "0.10.30"
+
+branches:
+  only:
+    - master
+
+before_install:
+  # Position ourselves to start the test in "script" phase
+  - cd ~/build/fronteerio/grasshopper
+
+  # Configure postgres
+  - printf "\n\nconfig.db.database = 'travis_ci_test';" >> config.js
+  - printf "\n\nconfig.db.username = 'postgres';" >> config.js
+
+script:
+  - grunt
+
+notifications:
+  email:
+    - simon@fronteer.io
+    - nicolaas@fronteer.io
