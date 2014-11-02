@@ -14,7 +14,7 @@ before_install:
   - cd ~/build/fronteerio/grasshopper
 
   # Configure postgres
-  - psql -c 'create database grasshopper;' -U postgres
+  - psql -c 'create database grasshoppertest;' -U postgres
   - printf "\n\nconfig.db.username = 'postgres';" >> config.js
 
 script:
