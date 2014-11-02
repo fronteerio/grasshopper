@@ -6,12 +6,15 @@ branches:
   only:
     - master
 
+addons:
+  postgresql: "9.3"
+
 before_install:
   # Position ourselves to start the test in "script" phase
   - cd ~/build/fronteerio/grasshopper
 
   # Configure postgres
-  - printf "\n\nconfig.db.database = 'travis_ci_test';" >> config.js
+  - psql -c 'create database grasshopper;' -U postgres
   - printf "\n\nconfig.db.username = 'postgres';" >> config.js
 
 script:
