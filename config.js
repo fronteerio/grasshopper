@@ -71,3 +71,11 @@ config.servers = {
     'adminPort': 2000,
     'appsPort': 2001
 };
+
+/*!
+ * The mixpanel related configuration
+ */
+config.mixpanel = {
+    'enabled': false,
+    'token': '564046938b572e5b562978febcba6cfb'
+};
