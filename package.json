@@ -63,6 +63,7 @@
     "grunt-mocha-hack": "latest",
     "grunt-text-replace": "latest",
     "istanbul": "latest",
+    "request": "latest",
     "shelljs": "latest"
   },
   "bundleDependencies": [
