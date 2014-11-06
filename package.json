@@ -26,6 +26,7 @@
     "cookie-parser": "latest",
     "cookie-session": "latest",
     "express": "latest",
+    "gh-admins": "",
     "gh-apps": "",
     "gh-auth": "",
     "gh-calendar": "",
@@ -49,6 +50,8 @@
     "pg": "latest",
     "readdirp": "latest",
     "restjsdoc": "latest",
+    "request": "latest",
+    "validator": "1.1.3",
     "sequelize": "latest"
   },
   "devDependencies": {
@@ -64,6 +67,7 @@
     "shelljs": "latest"
   },
   "bundleDependencies": [
+    "gh-admins",
     "gh-apps",
     "gh-auth",
     "gh-calendar",
