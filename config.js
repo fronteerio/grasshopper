@@ -32,8 +32,7 @@ config.db = {
     'username': 'grasshopper',
     'password': 'grasshopper',
     'dialect': 'postgres',
-    'port': 5432,
-    'dropOnStartup': true
+    'port': 5432
 };
 
 // Pretty-print the logs to standard out
