@@ -45,6 +45,7 @@
     "gh-tests": "",
     "gh-users": "",
     "lodash": "latest",
+    "optimist": "latest",
     "passport": "latest",
     "passport-local": "latest",
     "pg": "latest",
