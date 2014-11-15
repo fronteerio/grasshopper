@@ -1,6 +1,8 @@
 .DS_STORE
 *.log
 
+target/*
+
 node_modules/*
 !node_modules/gh-admins
 !node_modules/gh-apps

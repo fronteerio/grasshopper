@@ -50,7 +50,6 @@
     "pg": "latest",
     "readdirp": "latest",
     "restjsdoc": "latest",
-    "request": "latest",
     "validator": "1.1.3",
     "sequelize": "latest"
   },
@@ -63,7 +62,7 @@
     "grunt-mocha-hack": "latest",
     "grunt-text-replace": "latest",
     "istanbul": "latest",
-    "request": "latest",
+    "request": "2.47.0",
     "shelljs": "latest"
   },
   "bundleDependencies": [
