@@ -18,10 +18,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+var yargs = require('yargs');
+
 var GrassHopper = require('gh-core/lib/api');
 var log = require('gh-core/lib/logger').logger('app');
 
-var config = require('./config');
+var argv = yargs
+    .usage('$0 [--config <path/to/config.js>]')
+    .alias('c', 'config')
+    .describe('c', 'Specify an alternative config file')
+    .default('c', './config.js')
+    .argv;
+
+// If a relative path that starts with `./` has been provided,
+// we turn it into an absolute path based on the current working directory
+if (argv.config.match(/^\.\//)) {
+    argv.config = process.cwd() + argv.config.substring(1);
+// If a different non-absolute path has been provided, we turn
+// it into an absolute path based on the current working directory
+} else if (!argv.config.match(/^\//)) {
+    argv.config = process.cwd() + '/' + argv.config;
+}
+
+var config = require(argv.config);
 
 // Initialize the app server
 GrassHopper.init(config, function(err) {
