@@ -45,14 +45,14 @@
     "gh-tests": "",
     "gh-users": "",
     "lodash": "latest",
-    "optimist": "latest",
     "passport": "latest",
     "passport-local": "latest",
     "pg": "latest",
     "readdirp": "latest",
     "restjsdoc": "latest",
+    "sequelize": "latest",
     "validator": "1.1.3",
-    "sequelize": "latest"
+    "yargs": "latest"
   },
   "devDependencies": {
     "coveralls": "latest",
