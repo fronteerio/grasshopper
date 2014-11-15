@@ -51,8 +51,9 @@
     "readdirp": "latest",
     "restjsdoc": "latest",
     "request": "latest",
+    "sequelize": "latest",
     "validator": "1.1.3",
-    "sequelize": "latest"
+    "yargs": "latest"
   },
   "devDependencies": {
     "coveralls": "latest",
