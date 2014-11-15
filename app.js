@@ -18,12 +18,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-var optimist = require('optimist');
+var yargs = require('yargs');
 
 var GrassHopper = require('gh-core/lib/api');
 var log = require('gh-core/lib/logger').logger('app');
 
-var argv = optimist.usage('$0 [--config <path/to/config.js>]')
+var argv = yargs
+    .usage('$0 [--config <path/to/config.js>]')
     .alias('c', 'config')
     .describe('c', 'Specify an alternative config file')
     .default('c', './config.js')
