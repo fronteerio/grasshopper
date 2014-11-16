@@ -24,7 +24,7 @@
     "bunyan": "latest",
     "bunyan-prettystream": "latest",
     "cookie-parser": "latest",
-    "cookie-session": "1.0.2",
+    "cookie-session": "latest",
     "express": "latest",
     "gh-admins": "",
     "gh-apps": "",
