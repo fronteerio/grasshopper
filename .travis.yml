@@ -20,9 +20,6 @@ before_install:
 script:
   - grunt
 
-after_failure:
-  - cat tests.log | node_modules/.bin/bunyan
-
 notifications:
   email:
     - simon@fronteer.io
