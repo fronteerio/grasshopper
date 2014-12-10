@@ -18,7 +18,7 @@ before_install:
   - printf "\n\nconfig.db.username = 'postgres';" >> config.js
 
 script:
-  - grunt
+  - grunt test-coverage-coveralls
 
 notifications:
   email:
