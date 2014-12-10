@@ -1,6 +1,10 @@
 grasshopper
 ===========
 
+# Build status
+[![Build Status](https://travis-ci.org/fronteerio/grasshopper.png?branch=master)](https://travis-ci.org/fronteerio/grasshopper)
+[![Coverage Status](https://coveralls.io/repos/fronteerio/grasshopper/badge.png)](https://coveralls.io/r/fronteerio/grasshopper)
+
 Grasshopper Event Engine
 
 # Setup
