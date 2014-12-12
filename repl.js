@@ -35,4 +35,6 @@ GrassHopper.init(config, function(err) {
     var replServer = repl.start({
         'prompt': 'gh > '
     });
+
+    replServer.context.DB = require('gh-core/lib/db');
 });
