@@ -1,3 +1,4 @@
+sudo: false
 language: node_js
 node_js:
   - "0.10.30"
@@ -19,6 +20,9 @@ before_install:
 
 script:
   - grunt test-coverage-coveralls
+
+after_failure:
+  - cat tests.log | node_modules/.bin/bunyan -l debug
 
 notifications:
   email:
