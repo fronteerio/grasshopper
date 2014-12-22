@@ -46,6 +46,7 @@
     "gh-users": "",
     "lodash": "latest",
     "moment": "latest",
+    "moment-timezone": "latest",
     "passport": "latest",
     "passport-local": "latest",
     "pg": "latest",
