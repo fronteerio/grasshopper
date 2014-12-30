@@ -16,13 +16,11 @@ before_install:
 
   # Configure postgres
   - psql -c 'create database grasshoppertest;' -U postgres
+  - psql grasshoppertest -c 'create extension pg_trgm;' -U postgres
   - printf "\n\nconfig.db.username = 'postgres';" >> config.js
 
 script:
   - grunt test-coverage-coveralls
-
-after_failure:
-  - cat tests.log | node_modules/.bin/bunyan -l debug
 
 notifications:
   email:

@@ -32,6 +32,12 @@ psql template1
         GRANT
     template1=# GRANT ALL PRIVILEGES ON DATABASE grasshoppertest TO grasshopper;
         GRANT
+psql grasshopper
+    grasshopper=# CREATE EXTENSION pg_trgm;
+        CREATE EXTENSION
+psql grasshoppertest
+    grasshoppertest=# CREATE EXTENSION pg_trgm;
+        CREATE EXTENSION
 ```
 
 
