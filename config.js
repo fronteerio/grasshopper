@@ -72,3 +72,14 @@ config.servers = {
     'adminPort': 2000,
     'appsPort': 2001
 };
+
+/**
+ * `config.signing`
+ *
+ * Configuration namespace for the signing logic
+ *
+ * @param  {String}    key     This key will be used to sign sensitive information. It's vital to the security of the system that you change this in production
+ */
+config.signing = {
+    'key': 'The default signing key, please change me.'
+};
