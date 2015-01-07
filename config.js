@@ -70,7 +70,8 @@ config.cookie = {
 config.servers = {
     'adminHostname': 'admin.grasshopper.com',
     'adminPort': 2000,
-    'appsPort': 2001
+    'appsPort': 2001,
+    'shibbolethSPHost': 'shib-sp.grasshopper.com'
 };
 
 /**
