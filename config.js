@@ -77,7 +77,7 @@ config.servers = {
 /**
  * `config.signing`
  *
- * Configuration namespace for the signing logic
+ * The signing related configuration
  *
  * @param  {String}    key     This key will be used to sign sensitive information. It's vital to the security of the system that you change this in production
  */
