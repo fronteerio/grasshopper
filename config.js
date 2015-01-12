@@ -23,15 +23,20 @@ var PrettyStream = require('bunyan-prettystream');
 var config = module.exports = {};
 
 /*!
- * The database related configuration
+ * The database related configuration. Although Sequelize supports multiple database systems,
+ * Grasshopper only supports PostgreSQL.
  *
+ * @property  {String}      database        The name of the database to connect to
+ * @property  {String}      username        The name of the user to connect with
+ * @property  {String}      password        The password to authenticate with
+ * @property  {Number}      port            The port to connect to
+ * @property  {Boolean}     dropOnStartup   Whether to drop all the data in the database and re-creating each table. This does *NOT* work when ran in the `production` environment
  * @see https://github.com/sequelize/sequelize/wiki/API-Reference-Sequelize#new-sequelize
  */
 config.db = {
     'database': 'grasshopper',
     'username': 'grasshopper',
     'password': 'grasshopper',
-    'dialect': 'postgres',
     'port': 5432,
     'dropOnStartup': false
 };
@@ -42,6 +47,12 @@ prettyStdOut.pipe(process.stdout);
 
 /*!
  * The log related configuration
+ *
+ * @property  {Object[]}    streams                 A set of streams where logging statemnts can be sent to
+ * @property  {String}      streams[i].level        Statements of this level or higher will be sent to the `stream`. Possible levels in ascending order: `trace`, `debug`, `info`, `warn`, `error` or `fatal`
+ * @property  {Stream}      streams[i].stream       The stream to send the log statements to
+ * @property  {Object}      serializers             Defines how the JSON log statements should be formatted before being passed to a stream
+ * @see https://github.com/trentm/node-bunyan#streams-introduction
  */
 config.log = {
     'streams': [
@@ -59,6 +70,8 @@ config.log = {
 
 /*!
  * The cookie related configuration
+ *
+ * @property  {String}      secret                  The string that should be used to encrypt cookies with. It's vital to the security of the system that you change this in production
  */
 config.cookie = {
     'secret': 'The only reason for time is so that everything doesn\'t happen at once.'
@@ -66,6 +79,11 @@ config.cookie = {
 
 /*!
  * The servers related configuration
+ *
+ * @property  {String}      adminHostname           The hostname on which the admin UI will be made available
+ * @property  {Number}      adminPort               The port on which the admin API endpoints will be made available
+ * @property  {Number}      appsPort                The port on which the regular application API endpoints will be made available
+ * @property  {String}      shibbolethSPHost        The hostname on which the Shibboleth Service Provider software will be made available
  */
 config.servers = {
     'adminHostname': 'admin.grasshopper.com',
@@ -79,7 +97,7 @@ config.servers = {
  *
  * The signing related configuration
  *
- * @param  {String}    key     This key will be used to sign sensitive information. It's vital to the security of the system that you change this in production
+ * @property  {String}      key                     This key will be used to sign sensitive information. It's vital to the security of the system that you change this in production
  */
 config.signing = {
     'key': 'The default signing key, please change me.'
