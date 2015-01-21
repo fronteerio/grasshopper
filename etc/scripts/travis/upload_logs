@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-var fs = require('fs');
 var amazons3 = require('awssum-amazon-s3');
+var fs = require('fs');
 var path = require('path');
 var util = require('util');
 
@@ -35,7 +35,7 @@ if (argv.h) {
     return process.exit(0);
 }
 
-// Ensure that we're on the master branch
+// Ensure that this is a commit on or a PR against the master branch
 if (process.env['TRAVIS_REPO_SLUG'] !== 'fronteerio/grasshopper' || process.env['TRAVIS_BRANCH'] !== 'master' || process.env['TRAVIS_PULL_REQUEST'] == 'true') {
     console.log('Only uploading logs for commits on fronteerio/grasshopper#master');
     return;
