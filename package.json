@@ -57,6 +57,7 @@
     "yargs": "latest"
   },
   "devDependencies": {
+    "awssum-amazon-s3": "latest",
     "coveralls": "latest",
     "grunt": "latest",
     "grunt-cli": "latest",
