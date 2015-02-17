@@ -19,6 +19,7 @@ node_modules/*
 !node_modules/gh-rest
 !node_modules/gh-search
 !node_modules/gh-series
+!node_modules/gh-statsd
 !node_modules/gh-tenants
 !node_modules/gh-tests
 !node_modules/gh-users

@@ -92,13 +92,26 @@ config.servers = {
     'shibbolethSPHost': 'shib-sp.grasshopper.com'
 };
 
-/**
- * `config.signing`
- *
+/*!
  * The signing related configuration
  *
  * @property  {String}      key                     This key will be used to sign sensitive information. It's vital to the security of the system that you change this in production
  */
 config.signing = {
     'key': 'The default signing key, please change me.'
+};
+
+/*!
+ * The statsd related configuration
+ *
+ * @property  {Boolean}     enabled                 Whether the application should push telemetry data into statsd
+ * @property  {String}      host                    The hostname where statsd can be reached
+ * @property  {Number}      port                    The port where statsd can be reached
+ * @property  {String}      scope                   The prefix that should be prepended to each stat
+ */
+config.statsd = {
+    'enabled': false,
+    'host': '127.0.0.1',
+    'port': 8125,
+    'scope': 'gh'
 };
