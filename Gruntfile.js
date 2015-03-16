@@ -33,6 +33,7 @@ module.exports = function(grunt) {
         'pkg': grunt.file.readJSON('package.json'),
         'jscs': {
             'files': [
+                'app.js',
                 'Gruntfile.js',
                 'node_modules/gh-*/lib/**/*.js',
                 'node_modules/gh-*/tests/**/*.js'
