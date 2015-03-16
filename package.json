@@ -64,6 +64,7 @@
     "grunt-cli": "latest",
     "grunt-contrib-clean": "latest",
     "grunt-contrib-jshint": "latest",
+    "grunt-jscs": "latest",
     "grunt-mocha-hack": "latest",
     "grunt-text-replace": "latest",
     "istanbul": "latest",
