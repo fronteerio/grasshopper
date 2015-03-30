@@ -31,12 +31,22 @@ module.exports = function(grunt) {
     // Project configuration
     grunt.initConfig({
         'pkg': grunt.file.readJSON('package.json'),
+        'jscs': {
+            'files': [
+                'app.js',
+                'Gruntfile.js',
+                'node_modules/gh-*/lib/**/*.js',
+                'node_modules/gh-*/tests/**/*.js'
+            ],
+            'options': {
+                'config': '.jscsrc'
+            }
+        },
         'jslint': {
             'files': [
                 'Gruntfile.js',
                 'node_modules/gh-*/lib/**/*.js',
-                'node_modules/gh-*/tests/**/*.js',
-                'node_modules/gh-*/config/**/*.js'
+                'node_modules/gh-*/tests/**/*.js'
             ]
         },
         'jshint': {
@@ -123,7 +133,7 @@ module.exports = function(grunt) {
     };
 
     // Task to run the regex task and fail if it matches anything
-    grunt.registerTask('check-style', ['replace', 'jshint', 'checkRegexErrors']);
+    grunt.registerTask('check-style', ['replace', 'jscs', 'jshint', 'checkRegexErrors']);
     grunt.registerTask('checkRegexErrors', function() {
         grunt.task.requires('replace');
         if (regexErrors) {
@@ -132,7 +142,7 @@ module.exports = function(grunt) {
     });
 
     // Override default test task to use mocha-hack
-    grunt.registerTask('test', ['mocha-hack']);
+    grunt.registerTask('test', ['check-style', 'mocha-hack']);
 
     // Make a task for running tests on a single module
     grunt.registerTask('test-module', 'Test a single module', function(module) {
@@ -201,7 +211,7 @@ module.exports = function(grunt) {
     // Make a task to open the browser
     grunt.registerTask('showFile', 'Open a file with the OS default viewer', function(file) {
         var browser = shell.env['BROWSER'];
-        if (! browser) {
+        if (!browser) {
             if (process.platform === 'linux') {
                 browser = 'xdg-open';
             } else if (process.platform === 'darwin') {
@@ -211,7 +221,7 @@ module.exports = function(grunt) {
             }
         }
         if (browser) {
-            shell.exec(browser + ' '  + ( file || 'target/coverage.html' ));
+            shell.exec(browser + ' '  + (file || 'target/coverage.html'));
         }
     });
 
@@ -220,8 +230,9 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-mocha-hack');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-clean');
+    grunt.loadNpmTasks('grunt-jscs');
     grunt.loadNpmTasks('grunt-text-replace');
 
     // Default task.
-    grunt.registerTask('default', ['check-style', 'test']);
+    grunt.registerTask('default', ['test']);
 };

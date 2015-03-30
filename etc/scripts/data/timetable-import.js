@@ -213,7 +213,7 @@ var createOrgUnit = function(ctx, node, parent, callback) {
     if (node.type === 'module') {
         groupId = parent.GroupId;
     }
-    OrgUnitAPI.createOrgUnit(ctx, argv.app, node.name.substring(0, 255), node.type, null, groupId, parentId, function(err, orgunit) {
+    OrgUnitAPI.createOrgUnit(ctx, argv.app, node.name.substring(0, 255), node.type, null, null, null, groupId, parentId, function(err, orgunit) {
         if (err) {
             console.log(err);
             console.log("DisplayName: '%s'", node.name);
