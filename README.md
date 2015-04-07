@@ -21,7 +21,9 @@ brew install postgresql
 postgres -D /usr/local/var/postgres
 ```
 
-## Initialize the Grasshopper databases
+## Grasshopper
+
+### Initialize the database
 
 Run: `etc/postgres/init.sh`
 
@@ -48,7 +50,7 @@ psql grasshoppertest
         CREATE EXTENSION
 ```
 
-## Grasshopper
+### Install the app
 ```
 # Clone the application somewhere
 git clone git://github.com/fronteerio/grasshopper
