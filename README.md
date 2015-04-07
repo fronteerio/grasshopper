@@ -12,14 +12,22 @@ Grasshopper Event Engine
 This documentation assumes you're running OS X with homebrew.
 
 
-##  Postgres
+## Install and Start Postgres
 ```
 # Install postgres
 brew install postgresql
 
 # Start postgres
 postgres -D /usr/local/var/postgres
+```
 
+## Initialize the Grasshopper databases
+
+Run: `etc/postgres/init.sh`
+
+Or you can do it manually:
+
+```
 # Create a database and user
 psql template1
     template1=# CREATE USER grasshopper WITH PASSWORD 'grasshopper';
@@ -39,7 +47,6 @@ psql grasshoppertest
     grasshoppertest=# CREATE EXTENSION pg_trgm;
         CREATE EXTENSION
 ```
-
 
 ## Grasshopper
 ```
