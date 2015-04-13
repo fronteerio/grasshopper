@@ -86,10 +86,10 @@ config.cookie = {
  * @property  {String}      shibbolethSPHost        The hostname on which the Shibboleth Service Provider software will be made available
  */
 config.servers = {
-    'adminHostname': 'admin.grasshopper.com',
+    'adminHostname': 'admin.grasshopper.local',
     'adminPort': 2000,
     'appsPort': 2001,
-    'shibbolethSPHost': 'shib-sp.grasshopper.com'
+    'shibbolethSPHost': 'shib-sp.grasshopper.local'
 };
 
 /*!
