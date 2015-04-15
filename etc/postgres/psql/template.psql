@@ -1,0 +1,5 @@
+CREATE USER grasshopper WITH PASSWORD 'grasshopper';
+CREATE DATABASE grasshopper;
+CREATE DATABASE grasshoppertest;
+GRANT ALL PRIVILEGES ON DATABASE grasshopper TO grasshopper;
+GRANT ALL PRIVILEGES ON DATABASE grasshoppertest TO grasshopper;

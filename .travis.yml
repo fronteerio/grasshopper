@@ -34,5 +34,6 @@ after_failure:
 
 notifications:
   email:
-    - simon@fronteer.io
+    - branden@fronteer.io
     - nicolaas@fronteer.io
+    - simon@fronteer.io
