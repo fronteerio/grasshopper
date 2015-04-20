@@ -32,6 +32,10 @@ after_failure:
   - gzip tests.log
   - etc/scripts/travis/upload_logs
 
+after_success:
+  # Package and upload to Amazon S3
+  - ./etc/scripts/travis/upload.sh
+
 notifications:
   email:
     - branden@fronteer.io
