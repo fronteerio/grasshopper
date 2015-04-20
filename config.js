@@ -80,14 +80,14 @@ config.cookie = {
 /*!
  * The servers related configuration
  *
- * @property  {String}      webServerHostname       The hostname on which the web servers should be listening. See https://nodejs.org/api/http.html#http_server_listen_port_hostname_backlog_callback
+ * @property  {String}      listenAddress           The address on which the ExpressJS should be listening. See https://nodejs.org/api/http.html#http_server_listen_port_hostname_backlog_callback for more information
  * @property  {String}      adminHostname           The hostname on which the admin UI will be made available
  * @property  {Number}      adminPort               The port on which the admin API endpoints will be made available
  * @property  {Number}      appsPort                The port on which the regular application API endpoints will be made available
  * @property  {String}      shibbolethSPHost        The hostname on which the Shibboleth Service Provider software will be made available
  */
 config.servers = {
-    'webServerHostname': '0.0.0.0',
+    'listenAddress': '0.0.0.0',
     'adminHostname': 'admin.grasshopper.local',
     'adminPort': 2000,
     'appsPort': 2001,
