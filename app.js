@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Copyright (c) 2014 "Fronteer LTD"
+ * Copyright (c) 2015 "Fronteer LTD"
  * Grasshopper Event Engine
  *
  * This program is free software: you can redistribute it and/or modify
