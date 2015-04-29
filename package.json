@@ -57,6 +57,7 @@
     "restjsdoc": "latest",
     "sequelize": "latest",
     "validator": "1.1.3",
+    "xml-escape": "latest",
     "yargs": "latest"
   },
   "devDependencies": {
