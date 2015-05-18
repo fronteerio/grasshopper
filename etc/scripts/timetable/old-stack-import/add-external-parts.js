@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Copyright (c) 2014 "Fronteer LTD"
+ * Copyright (c) 2015 "Fronteer LTD"
  * Grasshopper Event Engine
  *
  * This program is free software: you can redistribute it and/or modify
@@ -49,9 +49,11 @@ var eventsTree = JSON.parse(fs.readFileSync(argv.e).toString('utf8'));
 var externalTree = JSON.parse(fs.readFileSync(argv.x).toString('utf8'));
 
 /**
- * Find a node in a set of nodes
+ * Find a node in a set of nodes. If the desired node is a course,
+ * matching will happen based on its `id`, otherwise matching will
+ * happen based on the `name`
  *
- * @param  {Node[]}     nodes           The nodes to search through
+ * @param  {Object}     nodes           The nodes to search through. Keys are the external ids, values are the actual nodes
  * @param  {Node}       nodeToFind      The node to search for
  * @return {Node}                       The matching node, or `null`
  * @api private
@@ -60,9 +62,9 @@ var _findNode = function(nodes, nodeToFind) {
     var childNodes = _.values(nodes);
     return _.find(childNodes, function(node) {
         if (nodeToFind.type === 'course') {
-            return nodeToFind.id == node.id;
+            return nodeToFind.id === node.id;
         } else {
-            return nodeToFind.name == node.name;
+            return nodeToFind.name === node.name;
         }
     });
 };
@@ -96,5 +98,6 @@ _.each(externalTree.nodes, function(course, courseId) {
 fs.writeFile(argv.output, JSON.stringify(eventsTree, null, 4), function(err) {
     if (err) {
         console.log('Could not save tree');
+        console.log(err);
     }
 });

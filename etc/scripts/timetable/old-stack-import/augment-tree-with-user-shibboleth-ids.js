@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Copyright (c) 2014 "Fronteer LTD"
+ * Copyright (c) 2015 "Fronteer LTD"
  * Grasshopper Event Engine
  *
  * This program is free software: you can redistribute it and/or modify
@@ -45,7 +45,7 @@ var argv = yargs
 var matched = {};
 
 // The number of events that have been visited by the script
-var visittedEvents = 0;
+var visitedEvents = 0;
 
 /**
  * Visit a node in the tree. If the node is an event, the organisers will be looked up in the set
@@ -74,9 +74,9 @@ var visitNode = function(node, users, tree) {
             });
             node.peopleSeen = true;
         }
-        visittedEvents++;
-        if (visittedEvents % 25 === 0) {
-            console.log('Handled %d events', visittedEvents);
+        visitedEvents++;
+        if (visitedEvents % 25 === 0) {
+            console.log('Handled %d events', visitedEvents);
 
             // Periodically write the tree to disk
             writeTree(tree);
@@ -108,14 +108,17 @@ var writeTree = function(tree) {
  */
 var findMatch = function(name, users) {
     var bestMatch = [];
-    var max = 100000;
+    var max = Math.MAX_VALUE;
 
+    // If we've already found a match for this name, we can avoid
     if (matched[name]) {
         return matched[name];
     }
 
+    // Strip out titles and whitespace
     var preppedName = prep(name);
 
+    // Compare the name to each user and retain the best match
     _.each(users, function(record) {
         var displayName = prep(record.displayName);
         var cn = prep(record.cn);
@@ -123,28 +126,38 @@ var findMatch = function(name, users) {
 
         if (displayName) {
             d = distance(preppedName, displayName);
+
+            // If the distance is lower than the last best match we have a new best match
             if (d < max) {
                 max = d;
                 bestMatch = [record];
-                sameMatches = 0;
-            } else if (d == max) {
+
+            // If it's the same we will have multiple matches to choose from
+            } else if (d === max) {
                 bestMatch.push(record);
             }
         }
 
         if (cn) {
             d = distance(preppedName, cn);
+
+            // If the distance is lower than the last best match we have a new best match
             if (d < max) {
                 max = d;
                 bestMatch = [record];
-                sameMatches = 0;
+
+            // If it's the same we will have multiple matches to choose from
             } else if (d == max) {
                 bestMatch.push(record);
             }
         }
     });
 
+    // We only return a user record if we have a single "best match". If there is more than one
+    // "best match" we will return null as there's no way to determine algorithmically which one
+    // is the "best" of the "best matches"
     if (bestMatch.length === 1) {
+        // Cache the result for this name so subsequent calls can return the user record immediately
         matched[name] = bestMatch[0];
         return matched[name];
     }
