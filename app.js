@@ -18,6 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Always run in UTC, no matter what
+process.env.TZ = 'UTC';
+
 var yargs = require('yargs');
 
 var GrassHopper = require('gh-core/lib/api');
