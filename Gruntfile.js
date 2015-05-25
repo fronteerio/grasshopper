@@ -142,7 +142,7 @@ module.exports = function(grunt) {
     });
 
     // Override default test task to use mocha-hack
-    grunt.registerTask('test', ['check-style', 'mocha-hack']);
+    grunt.registerTask('test', ['mocha-hack']);
 
     // Make a task for running tests on a single module
     grunt.registerTask('test-module', 'Test a single module', function(module) {
@@ -234,5 +234,5 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-text-replace');
 
     // Default task.
-    grunt.registerTask('default', ['test']);
+    grunt.registerTask('default', ['check-style', 'test']);
 };
