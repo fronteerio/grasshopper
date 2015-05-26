@@ -18,6 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Always work in UTC
+process.env.TZ = 'UTC';
+
 /*
  * Dump the organisational units, series and events data from an application to disk
  */
@@ -110,15 +113,27 @@ var exportCourses = function(courses, callback, _exportedCourses) {
  * Remove the `id` and `ParentId` from every exported organisational unit
  */
 var visitOrgUnit = function(orgUnit) {
+    orgUnit.metadata = orgUnit.metadata || {};
+    orgUnit.metadata.exportedId = orgUnit.id;
     delete orgUnit.id;
     delete orgUnit.ParentId;
 
     _.each(orgUnit.children, visitOrgUnit);
     _.each(orgUnit.series, function(series) {
+        series.metadata = series.metadata || {};
+        series.metadata.exportedId = series.id;
         delete series.id;
         _.each(series.events, function(event) {
             delete event.id;
         });
+    });
+
+    // Splice off borrowed series so they don't get auto-created when importing
+    orgUnit.borrowedSeries = _.filter(orgUnit.series, function(series) {
+        return (series.borrowedFrom);
+    });
+    orgUnit.series = _.filter(orgUnit.series, function(series) {
+        return (!series.borrowedFrom);
     });
 };
 

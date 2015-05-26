@@ -18,6 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Always work in UTC
+process.env.TZ = 'UTC';
+
 var _ = require('lodash');
 var fs = require('fs');
 var util = require('util');
@@ -31,6 +34,7 @@ var log = require('gh-core/lib/logger').logger('scripts/orgunit-import');
 var OrgUnitImport = require('gh-orgunit/lib/internal/import');
 var OrgUnitAPI = require('gh-orgunit');
 var OrgUnitDAO = require('gh-orgunit/lib/internal/dao');
+var SeriesDAO = require('gh-series/lib/internal/dao');
 
 var config = require('../../../config');
 
@@ -94,11 +98,24 @@ GrassHopper.init(config, function(err) {
                     log().info('Creating courses');
                     _createCourses(ctx, courses.slice(), function() {
 
+                        // Take a deep copy of the courses before we import them. The import
+                        // operation might make in-place modifications (such as deleting series)
+                        // which would trip up the borrowing process later
+                        var copyCourses = _.cloneDeep(courses);
                         log().info('Importing the tree under each course');
-                        _importCourses(ctx, courses, function() {
+                        _importCourses(ctx, courses.slice(), function() {
 
-                            log().info('All courses have been imported');
-                            process.exit(0);
+                            log().info('Exporting the tree under each course');
+                            _exportCourses(ctx, copyCourses.slice(), function() {
+
+                                // Take another pass and take care of borrowed series
+                                log().info('Borrowing series where appropriate');
+                                _handleBorrowing(ctx, copyCourses, function() {
+
+                                    log().info('All courses have been imported');
+                                    process.exit(0);
+                                });
+                            });
                         });
                     });
                 });
@@ -193,14 +210,231 @@ var _importCourses = function(ctx, courses, callback) {
     }
 
     var course = courses.pop();
+
     log().info({'id': course.orgUnitId}, 'Importing %s', course.displayName);
-    OrgUnitImport.importOrgUnit(ctx, course.orgUnitId, course, false, function(err) {
+    var options = {
+        'deleteMissing': false,
+        'checkExternalId': false
+    };
+    OrgUnitImport.importOrgUnit(ctx, course.orgUnitId, course, options, function(err) {
         if (err) {
             log().error({'err': err}, 'Failed to import a course');
-            process.exit();
+            process.exit(1);
         }
 
         // Move on to the next course
         _importCourses(ctx, courses, callback);
     });
+};
+
+/**
+ * Export a set of courses. This method will add an `exportedCourse` on each course
+ * holding the entire tree for that course
+ *
+ * @param  {Context}    ctx         Standard context object containing the current user and the current application
+ * @param  {Object[]}   courses     The courses to export
+ * @param  {Function}   callback    Standard callback function
+ * @api private
+ */
+var _exportCourses = function(ctx, courses, callback) {
+    if (_.isEmpty(courses)) {
+        return callback();
+    }
+
+    var course = courses.pop();
+
+    // Export the course so the new ids can be used for the borrowing stage
+    OrgUnitAPI.exportOrgUnit(ctx, course.orgUnitId, 'json', function(err, exportedCourse) {
+        if (err) {
+            log().error({'err': err}, 'Failed to export a course');
+            process.exit(1);
+        }
+
+        course.exportedCourse = exportedCourse;
+
+        // Move on to the next course
+        _exportCourses(ctx, courses, callback);
+    });
+};
+
+/**
+ * Borrow series under a module where appropriate
+ *
+ * @param  {Context}    ctx         Standard context object containing the current user and the current application
+ * @param  {Object[]}   courses     The courses to check for borrowing
+ * @param  {Function}   callback    Standard callback function
+ * @api private
+ */
+var _handleBorrowing = function(ctx, courses, callback) {
+    // Get all the organisational units with borrowed series
+    var orgunitsWithBorrowedSeries = [];
+    _.each(courses, function(course) {
+        _getOrgUnitsWithBorrowedSeries(course, orgunitsWithBorrowedSeries);
+    });
+
+    // If there is not a single organisational unit with a series, we're done
+    if (_.isEmpty(orgunitsWithBorrowedSeries)) {
+        return callback();
+    }
+
+    // Otherwise, we need to process them
+    return _handleOrgUnitsWithBorrowedSeries(ctx, courses, orgunitsWithBorrowedSeries, callback);
+};
+
+/**
+ * Get the organisational units (modules) who contain series that are borrowed from
+ * other modules
+ *
+ * @param  {OrgUnit}        orgUnit                         The organisational unit to check
+ * @param  {OrgUnit[]}      orgunitsWithBorrowedSeries      The organisational units that contain borrowed series
+ */
+var _getOrgUnitsWithBorrowedSeries = function(orgUnit, orgunitsWithBorrowedSeries) {
+    if (!_.isEmpty(orgUnit.borrowedSeries)) {
+        orgunitsWithBorrowedSeries.push(orgUnit);
+    }
+
+    // Visit any child organisational units
+    _.each(orgUnit.children, function(childOrgUnit) {
+        _getOrgUnitsWithBorrowedSeries(childOrgUnit, orgunitsWithBorrowedSeries);
+    });
+};
+
+/**
+ * Borrow series for a set of organisational units known to contain borrowed series
+ *
+ * @param  {Context}    ctx                             Standard context object containing the current user and the current application
+ * @param  {Object[]}   courses                         The courses to check for borrowing
+ * @param  {OrgUnit[]}  orgunitsWithBorrowedSeries      The organisational units that contain borrowed series
+ * @param  {Function}   callback                        Standard callback function
+ * @api private
+ */
+var _handleOrgUnitsWithBorrowedSeries = function(ctx, courses, orgunitsWithBorrowedSeries, callback) {
+    if (_.isEmpty(orgunitsWithBorrowedSeries)) {
+        return callback();
+    }
+
+    // Deal with an organisational unit's borrowed series
+    var orgUnitWithBorrowedSeries = orgunitsWithBorrowedSeries.pop();
+    _handleOrgUnitWithBorrowedSeries(ctx, courses, orgUnitWithBorrowedSeries, function() {
+
+        // Move on to the next organisational unit with one or more borrowed series
+        _handleOrgUnitsWithBorrowedSeries(ctx, courses, orgunitsWithBorrowedSeries, callback);
+    });
+};
+
+/**
+ * Borrow series for an organisational unit known to contain borrowed series
+ *
+ * @param  {Context}    ctx                             Standard context object containing the current user and the current application
+ * @param  {Object[]}   courses                         The courses to check for borrowing
+ * @param  {OrgUnit}    orgUnitWithBorrowedSeries       The organisational unit that contains borrowed series
+ * @param  {Function}   callback                        Standard callback function
+ * @api private
+ */
+var _handleOrgUnitWithBorrowedSeries = function(ctx, courses, orgUnitWithBorrowedSeries, callback) {
+    // If this organisational unit has no further borrowed series, we're done
+    if (_.isEmpty(orgUnitWithBorrowedSeries.borrowedSeries)) {
+        return callback();
+    }
+
+    var borrowedSeries = orgUnitWithBorrowedSeries.borrowedSeries.pop();
+
+    // We need the *exported* organisational unit under which the serie will be borrowed
+    // as we need its id to do any database operations
+    var parent = false;
+    for (var i = 0; i < courses.length && !parent; i++) {
+        parent = _findOrgUnit(courses[i].exportedCourse, orgUnitWithBorrowedSeries.metadata.exportedId);
+    }
+
+    // Find the *exported* series so we can borrow it under the organisational unit
+    var series = false;
+    for (i = 0; i < courses.length && !series; i++) {
+        series = _findSeries(courses[i].exportedCourse, borrowedSeries.metadata.exportedId);
+    }
+
+    // If the parent or series couldn't be found, there is something wrong with the input data
+    if (!parent || !series) {
+        log().warn({
+            'orgUnit': _.omit(orgUnitWithBorrowedSeries, 'series', 'borrowedSeries'),
+            'series': _.omit(borrowedSeries, 'events')
+        }, 'Could not borrow a series under a module');
+        return callback();
+    }
+
+    // Get module and series instances
+    OrgUnitDAO.getOrgUnit(parent.id, false, function(err, orgUnit) {
+        if (err) {
+            log().error({'err': err}, 'Could not get the parent module when borrowing a series');
+            process.exit(1);
+        }
+
+        SeriesDAO.getSerie(series.id, false, function(err, series) {
+            if (err) {
+                log().error({'err': err}, 'Could not get the series when borrowing a series');
+                process.exit(1);
+            }
+
+            // Borrow the series under the organisational unit
+            OrgUnitDAO.addOrgUnitSeries(orgUnit, series, function(err) {
+                if (err) {
+                    log().error({
+                        'err': err,
+                        'parent': parent.id,
+                        'series': series.id
+                    }, 'Could not borrow the series under the organisational unit');
+                    process.exit(1);
+                }
+
+                // Move on to the next borrowed series in this organisational unit
+                _handleOrgUnitWithBorrowedSeries(ctx, courses, orgUnitWithBorrowedSeries, callback);
+            });
+        });
+    });
+};
+
+/**
+ * Find an organisational unit by its exported id. This function will recursively search through
+ * the given organisational unit's children until it finds an organisational unit whose `exportedId`
+ * matches the given `id`.
+ *
+ * @param  {OrgUnit}    orgUnit     The tree of organisational units to search through
+ * @param  {Number}     id          The old id of the organisational unit to look for
+ * @return {OrgUnit}                The matching organisational unit (or false if none could be found)
+ * @api private
+ */
+var _findOrgUnit = function(orgUnit, id) {
+    if (orgUnit.metadata && orgUnit.metadata.exportedId === id) {
+        return orgUnit;
+    }
+
+    var match = false;
+    for (var i = 0; i < orgUnit.children.length && !match; i++) {
+        match = _findOrgUnit(orgUnit.children[i], id);
+    }
+    return match;
+};
+
+/**
+ * Find a series by its exported id. This function will recursively search through
+ * the given organisational unit's children until it finds a series whose `exportedId`
+ * matches the given `id`.
+ *
+ * @param  {OrgUnit}    orgUnit     The tree of organisational units to search through
+ * @param  {Number}     id          The old id of the series to look for
+ * @return {Series}                 The matching series (or false if none could be found)
+ * @api private
+ */
+var _findSeries = function(orgUnit, id) {
+    for (var i = 0; i < orgUnit.series.length; i++) {
+        if (orgUnit.series[i].metadata && orgUnit.series[i].metadata.exportedId === id) {
+            return orgUnit.series[i];
+        }
+    }
+
+    // Check the children
+    var match = false;
+    for (i = 0; i < orgUnit.children.length && !match; i++) {
+        match = _findSeries(orgUnit.children[i], id);
+    }
+    return match;
 };
