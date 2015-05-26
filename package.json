@@ -74,7 +74,7 @@
     "grunt-contrib-clean": "latest",
     "grunt-contrib-jshint": "latest",
     "grunt-jscs": "latest",
-    "grunt-mocha-hack": "latest",
+    "grunt-mocha-hack": "git://github.com/gregrperkins/grunt-mocha-hack#4b74f8c",
     "grunt-text-replace": "latest",
     "istanbul": "latest",
     "request": "latest",
