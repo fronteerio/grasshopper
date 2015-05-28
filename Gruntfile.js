@@ -35,6 +35,7 @@ module.exports = function(grunt) {
             'files': [
                 'app.js',
                 'Gruntfile.js',
+                'etc/scripts/**/*.js',
                 'node_modules/gh-*/lib/**/*.js',
                 'node_modules/gh-*/tests/**/*.js'
             ],
