@@ -57,13 +57,13 @@ GrassHopper.init(config, function(err) {
     }
 
     log().info('Getting all the courses');
-    getCourses(function(courses) {
+    _getCourses(function(courses) {
 
         log().info('Exporting all the courses');
-        exportCourses(courses, function(courses) {
+        _exportCourses(courses, function(courses) {
 
             log().info('Flushing courses to disk');
-            writeCourses(courses, function() {
+            _writeCourses(courses, function() {
                 process.exit(0);
             });
         });
@@ -73,7 +73,7 @@ GrassHopper.init(config, function(err) {
 /**
  * Get all the courses in the application
  */
-var getCourses = function(callback) {
+var _getCourses = function(callback) {
     OrgUnitDAO.getOrgUnits(argv.app, null, ['course'], null, function(err, orgUnits) {
         if (err) {
             log().error({'err': err}, 'Failed to get the root nodes');
@@ -87,14 +87,14 @@ var getCourses = function(callback) {
 /**
  * Export the organisational units, event series and events under the courses
  */
-var exportCourses = function(courses, callback, _exportedCourses) {
+var _exportCourses = function(courses, callback, _exportedCourses) {
     _exportedCourses =  _exportedCourses || [];
     if (_.isEmpty(courses)) {
         return callback(_exportedCourses);
     }
 
     var course = courses.pop();
-    log().info({'id': course.id}, 'Exporting %s', course.displayName);
+    log().info({'id': course.id}, 'Exporting %s, %d remaining', course.displayName, courses.length);
     OrgUnitDAO.exportOrgUnit(course, 'json', function(err, exportedCourse) {
         if (err) {
             log().error({'err': err, 'course': course.id}, 'Failed to export a course');
@@ -102,23 +102,23 @@ var exportCourses = function(courses, callback, _exportedCourses) {
         }
 
         // Remove the id properties from the exported courses
-        visitOrgUnit(exportedCourse);
+        _visitOrgUnit(exportedCourse);
 
         _exportedCourses.push(exportedCourse);
-        exportCourses(courses, callback, _exportedCourses);
+        _exportCourses(courses, callback, _exportedCourses);
     });
 };
 
 /**
  * Remove the `id` and `ParentId` from every exported organisational unit
  */
-var visitOrgUnit = function(orgUnit) {
+var _visitOrgUnit = function(orgUnit) {
     orgUnit.metadata = orgUnit.metadata || {};
     orgUnit.metadata.exportedId = orgUnit.id;
     delete orgUnit.id;
     delete orgUnit.ParentId;
 
-    _.each(orgUnit.children, visitOrgUnit);
+    _.each(orgUnit.children, _visitOrgUnit);
     _.each(orgUnit.series, function(series) {
         series.metadata = series.metadata || {};
         series.metadata.exportedId = series.id;
@@ -128,19 +128,18 @@ var visitOrgUnit = function(orgUnit) {
         });
     });
 
-    // Splice off borrowed series so they don't get auto-created when importing
-    orgUnit.borrowedSeries = _.filter(orgUnit.series, function(series) {
-        return (series.borrowedFrom);
+    // Distinguish native series from borrowed series so borrowed series don't get get auto-created when importing
+    var partitionedSeries = _.partition(orgUnit.series, function(series) {
+        return (!series.borrowedSeries);
     });
-    orgUnit.series = _.filter(orgUnit.series, function(series) {
-        return (!series.borrowedFrom);
-    });
+    orgUnit.series = partitionedSeries[0];
+    orgUnit.borrowedSeries = partitionedSeries[1];
 };
 
 /**
  * Write the courses to disk
  */
-var writeCourses = function(courses, callback) {
+var _writeCourses = function(courses, callback) {
     fs.writeFile(argv.output, JSON.stringify(courses, null, 4), function(err) {
         if (err) {
             log().error({'err': err}, 'Could not save the courses');

@@ -105,6 +105,9 @@ GrassHopper.init(config, function(err) {
                         log().info('Importing the tree under each course');
                         _importCourses(ctx, courses.slice(), function() {
 
+                            // Export each imported course so we have the ids of any created
+                            // organisational units or series. This will allow us to borrow the
+                            // correct series under other modules later
                             log().info('Exporting the tree under each course');
                             _exportCourses(ctx, copyCourses.slice(), function() {
 
@@ -191,7 +194,7 @@ var _createCourses = function(ctx, courses, callback) {
             course.orgUnitId = orgUnit.id;
 
             // Move on to the next course
-            _createCourses(ctx, courses, callback);
+            return _createCourses(ctx, courses, callback);
         });
     });
 };
@@ -211,7 +214,7 @@ var _importCourses = function(ctx, courses, callback) {
 
     var course = courses.pop();
 
-    log().info({'id': course.orgUnitId}, 'Importing %s', course.displayName);
+    log().info({'id': course.orgUnitId}, 'Importing %s, %d remaining', course.displayName, courses.length);
     var options = {
         'deleteMissing': false,
         'checkExternalId': false
@@ -223,7 +226,7 @@ var _importCourses = function(ctx, courses, callback) {
         }
 
         // Move on to the next course
-        _importCourses(ctx, courses, callback);
+        return _importCourses(ctx, courses, callback);
     });
 };
 
@@ -244,6 +247,7 @@ var _exportCourses = function(ctx, courses, callback) {
     var course = courses.pop();
 
     // Export the course so the new ids can be used for the borrowing stage
+    log().info({'id': course.orgUnitId}, 'Exporting %s, %d remaining', course.displayName, courses.length);
     OrgUnitAPI.exportOrgUnit(ctx, course.orgUnitId, 'json', function(err, exportedCourse) {
         if (err) {
             log().error({'err': err}, 'Failed to export a course');
@@ -253,7 +257,7 @@ var _exportCourses = function(ctx, courses, callback) {
         course.exportedCourse = exportedCourse;
 
         // Move on to the next course
-        _exportCourses(ctx, courses, callback);
+        return _exportCourses(ctx, courses, callback);
     });
 };
 
@@ -267,9 +271,8 @@ var _exportCourses = function(ctx, courses, callback) {
  */
 var _handleBorrowing = function(ctx, courses, callback) {
     // Get all the organisational units with borrowed series
-    var orgunitsWithBorrowedSeries = [];
-    _.each(courses, function(course) {
-        _getOrgUnitsWithBorrowedSeries(course, orgunitsWithBorrowedSeries);
+    var orgunitsWithBorrowedSeries = _.map(function(course) {
+        return _getOrgUnitsWithBorrowedSeries(course);
     });
 
     // If there is not a single organisational unit with a series, we're done
@@ -286,17 +289,19 @@ var _handleBorrowing = function(ctx, courses, callback) {
  * other modules
  *
  * @param  {OrgUnit}        orgUnit                         The organisational unit to check
- * @param  {OrgUnit[]}      orgunitsWithBorrowedSeries      The organisational units that contain borrowed series
+ * @return {OrgUnit[]}                                      The organisational units that contain borrowed series
  */
-var _getOrgUnitsWithBorrowedSeries = function(orgUnit, orgunitsWithBorrowedSeries) {
+var _getOrgUnitsWithBorrowedSeries = function(orgUnit, _orgunitsWithBorrowedSeries) {
+    _orgunitsWithBorrowedSeries = _orgunitsWithBorrowedSeries || [];
     if (!_.isEmpty(orgUnit.borrowedSeries)) {
-        orgunitsWithBorrowedSeries.push(orgUnit);
+        _orgunitsWithBorrowedSeries.push(orgUnit);
     }
 
     // Visit any child organisational units
     _.each(orgUnit.children, function(childOrgUnit) {
-        _getOrgUnitsWithBorrowedSeries(childOrgUnit, orgunitsWithBorrowedSeries);
+        _getOrgUnitsWithBorrowedSeries(childOrgUnit, _orgunitsWithBorrowedSeries);
     });
+    return _orgunitsWithBorrowedSeries;
 };
 
 /**
@@ -318,7 +323,7 @@ var _handleOrgUnitsWithBorrowedSeries = function(ctx, courses, orgunitsWithBorro
     _handleOrgUnitWithBorrowedSeries(ctx, courses, orgUnitWithBorrowedSeries, function() {
 
         // Move on to the next organisational unit with one or more borrowed series
-        _handleOrgUnitsWithBorrowedSeries(ctx, courses, orgunitsWithBorrowedSeries, callback);
+        return _handleOrgUnitsWithBorrowedSeries(ctx, courses, orgunitsWithBorrowedSeries, callback);
     });
 };
 
@@ -339,7 +344,7 @@ var _handleOrgUnitWithBorrowedSeries = function(ctx, courses, orgUnitWithBorrowe
 
     var borrowedSeries = orgUnitWithBorrowedSeries.borrowedSeries.pop();
 
-    // We need the *exported* organisational unit under which the serie will be borrowed
+    // We need the *exported* organisational unit under which the series will be borrowed
     // as we need its id to do any database operations
     var parent = false;
     for (var i = 0; i < courses.length && !parent; i++) {
@@ -386,7 +391,7 @@ var _handleOrgUnitWithBorrowedSeries = function(ctx, courses, orgUnitWithBorrowe
                 }
 
                 // Move on to the next borrowed series in this organisational unit
-                _handleOrgUnitWithBorrowedSeries(ctx, courses, orgUnitWithBorrowedSeries, callback);
+                return _handleOrgUnitWithBorrowedSeries(ctx, courses, orgUnitWithBorrowedSeries, callback);
             });
         });
     });
@@ -403,7 +408,7 @@ var _handleOrgUnitWithBorrowedSeries = function(ctx, courses, orgUnitWithBorrowe
  * @api private
  */
 var _findOrgUnit = function(orgUnit, id) {
-    if (orgUnit.metadata && orgUnit.metadata.exportedId === id) {
+    if (_.get(orgUnit, 'metadata.exportedId') === id) {
         return orgUnit;
     }
 
@@ -425,13 +430,15 @@ var _findOrgUnit = function(orgUnit, id) {
  * @api private
  */
 var _findSeries = function(orgUnit, id) {
-    for (var i = 0; i < orgUnit.series.length; i++) {
-        if (orgUnit.series[i].metadata && orgUnit.series[i].metadata.exportedId === id) {
-            return orgUnit.series[i];
-        }
+    // Try to find the series in the organisational unit
+    var series = _.find(orgUnit.series, function(series) {
+        return (_.get(series, 'metadata.exportedId') === id);
+    });
+    if (series) {
+        return series;
     }
 
-    // Check the children
+    // If we couldn't find the series in the organisational unit, we try its children's series
     var match = false;
     for (i = 0; i < orgUnit.children.length && !match; i++) {
         match = _findSeries(orgUnit.children[i], id);
