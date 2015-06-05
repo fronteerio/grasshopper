@@ -222,7 +222,6 @@ var _importCourses = function(ctx, courses, callback) {
     OrgUnitImport.importOrgUnit(ctx, course.orgUnitId, course, options, function(err) {
         if (err) {
             log().error({'err': err}, 'Failed to import a course');
-            process.exit(1);
         }
 
         // Move on to the next course
