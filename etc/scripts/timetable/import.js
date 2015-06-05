@@ -274,6 +274,7 @@ var _handleBorrowing = function(ctx, courses, callback) {
     var orgunitsWithBorrowedSeries = _.map(function(course) {
         return _getOrgUnitsWithBorrowedSeries(course);
     });
+    orgunitsWithBorrowedSeries = _.compact(orgunitsWithBorrowedSeries);
 
     // If there is not a single organisational unit with a series, we're done
     if (_.isEmpty(orgunitsWithBorrowedSeries)) {

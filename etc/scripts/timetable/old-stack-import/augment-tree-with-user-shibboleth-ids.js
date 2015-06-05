@@ -198,7 +198,7 @@ var getTree = function(callback) {
  */
 var getUsersFromCSV = function(callback) {
     console.log('Parsing CSV file');
-    var parser = csv.parse({'columns': ['dn', 'uid', 'cn', 'displayName', 'mail']}, function(err, records) {
+    var parser = csv.parse({'columns': ['displayName', 'email', 'cn']}, function(err, records) {
         if (err) {
             console.log('Failed to parse CSV file');
             console.log(err);
