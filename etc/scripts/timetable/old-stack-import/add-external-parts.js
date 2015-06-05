@@ -62,9 +62,17 @@ var _findNode = function(nodes, nodeToFind) {
     var childNodes = _.values(nodes);
     return _.find(childNodes, function(node) {
         if (nodeToFind.type === 'course') {
-            return nodeToFind.id === node.id;
+            return nodeToFind.id == node.id;
+        } else if (nodeToFind.type === 'subject') {
+            if (!_.isEmpty(node.oldIds)) {
+                return _.find(node.oldIds, function(oldId) {
+                    return oldId == nodeToFind.id;
+                });
+            }
+
+            return (nodeToFind.name === node.name);
         } else {
-            return nodeToFind.name === node.name;
+            return (nodeToFind.name === node.name);
         }
     });
 };
@@ -89,6 +97,10 @@ _.each(externalTree.nodes, function(course, courseId) {
             var partNode = _findNode(subjectOrPart.nodes, part);
             if (!partNode) {
                 subjectOrPartNode.nodes = part;
+            } else if (_.has(part, 'data.external')) {
+                partNode.data = {
+                    'external': part.data.external
+                };
             }
         });
     });

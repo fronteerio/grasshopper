@@ -227,6 +227,7 @@ var mergeSubjects = function(tree) {
             _.each(subjectsByName, function(subjects, subjectName) {
                 course.nodes[subjectName] = {
                     'id': subjectName,
+                    'oldIds': _.pluck(subjects, 'id'),
                     'type': 'subject',
                     'name': subjectName,
                     'nodes': {}
