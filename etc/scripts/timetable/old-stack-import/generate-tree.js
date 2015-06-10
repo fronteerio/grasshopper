@@ -22,6 +22,9 @@
  * ingested into the system
  */
 
+// Always work in UTC
+process.env.TZ = 'UTC';
+
 var _ = require('lodash');
 var csv = require('csv');
 var fs = require('fs');

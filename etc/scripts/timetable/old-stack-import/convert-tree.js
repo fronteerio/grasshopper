@@ -22,6 +22,9 @@
  * This script will convert a regular tree into a structure that can be imported into Grasshopper
  */
 
+// Always work in UTC
+process.env.TZ = 'UTC';
+
 var _ = require('lodash');
 var fs = require('fs');
 var util = require('util');
