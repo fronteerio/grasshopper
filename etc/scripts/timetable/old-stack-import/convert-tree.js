@@ -113,7 +113,7 @@ var _convertSeries = function(node) {
                 'start': eventNode.start,
                 'end': eventNode.end,
                 'location': eventNode.location,
-                'organisers': _.map(node.people, function(person) {
+                'organisers': _.map(eventNode.people, function(person) {
                     var organiser = {};
                     if (_.isObject(person)) {
                         organiser.displayName = person.displayName;

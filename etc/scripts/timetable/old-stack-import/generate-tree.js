@@ -176,6 +176,12 @@ var generateTree = function(records) {
             })
             .flatten()
 
+            .map(function(person) {
+                // Split again on ' & '
+                return person.split(' & ');
+            })
+            .flatten()
+
             // Trim off leading and trailing whitespace
             .map(function(person) {
                 return person.trim().replace(/,/g, '');
