@@ -66,7 +66,7 @@ var visitNode = function(node, users, tree) {
                 var match = findMatch(organiser, users);
                 if (match) {
                     node.people[index] = {
-                        'shibbolethId': match.uid + '@cam.ac.uk',
+                        'shibbolethId': match.cn + '@cam.ac.uk',
                         'displayName': match.displayName,
                         'original': organiser
                     };
@@ -75,10 +75,9 @@ var visitNode = function(node, users, tree) {
             node.peopleSeen = true;
         }
         visitedEvents++;
-        if (visitedEvents % 25 === 0) {
-            console.log('Handled %d events', visitedEvents);
 
-            // Periodically write the tree to disk
+        // Periodically write the tree to disk
+        if (visitedEvents % 50 === 0) {
             writeTree(tree);
         }
     } else {
@@ -96,6 +95,7 @@ var visitNode = function(node, users, tree) {
  */
 var writeTree = function(tree) {
     fs.writeFileSync(argv.output, JSON.stringify(tree, null, 4));
+    fs.writeFileSync('./username.matches.txt', JSON.stringify(matched));
 };
 
 /**
@@ -107,25 +107,28 @@ var writeTree = function(tree) {
  * @api private
  */
 var findMatch = function(name, users) {
-    var bestMatch = [];
-    var max = Math.MAX_VALUE;
-
-    // If we've already found a match for this name, we can avoid
-    if (matched[name]) {
+    // If we've already found a match for this name, we can avoid doing more work
+    if (!_.isUndefined(matched[name])) {
         return matched[name];
     }
+
+    var bestMatch = [];
+    var max = Number.MAX_VALUE;
 
     // Strip out titles and whitespace
     var preppedName = prep(name);
 
+    // Ignore short names as it's hard to do any meaningful analysis on them
+    if (preppedName.length <= 4) {
+        return false;
+    }
+
     // Compare the name to each user and retain the best match
     _.each(users, function(record) {
-        var displayName = prep(record.displayName);
-        var cn = prep(record.cn);
         var d = 0;
 
-        if (displayName) {
-            d = distance(preppedName, displayName);
+        if (record.preppedDisplayName) {
+            d = distance(preppedName, record.preppedDisplayName);
 
             // If the distance is lower than the last best match we have a new best match
             if (d < max) {
@@ -138,8 +141,8 @@ var findMatch = function(name, users) {
             }
         }
 
-        if (cn) {
-            d = distance(preppedName, cn);
+        if (record.preppedCn) {
+            d = distance(preppedName, record.preppedCn);
 
             // If the distance is lower than the last best match we have a new best match
             if (d < max) {
@@ -156,11 +159,13 @@ var findMatch = function(name, users) {
     // We only return a user record if we have a single "best match". If there is more than one
     // "best match" we will return null as there's no way to determine algorithmically which one
     // is the "best" of the "best matches"
-    if (bestMatch.length === 1) {
+    if (bestMatch.length === 1 && max < -0.92) {
         // Cache the result for this name so subsequent calls can return the user record immediately
         matched[name] = bestMatch[0];
         return matched[name];
     }
+
+    matched[name] = false;
 
     return null;
 };
@@ -198,7 +203,7 @@ var getTree = function(callback) {
  */
 var getUsersFromCSV = function(callback) {
     console.log('Parsing CSV file');
-    var parser = csv.parse({'columns': ['dn', 'uid', 'cn', 'displayName', 'mail']}, function(err, records) {
+    var parser = csv.parse({'columns': ['displayName', 'email', 'cn']}, function(err, records) {
         if (err) {
             console.log('Failed to parse CSV file');
             console.log(err);
@@ -224,7 +229,7 @@ var getUsersFromCSV = function(callback) {
  * @api private
  */
 var prep = function(s) {
-    return s.replace(/(Dr\.)|(Prof\.?)|(Professor)/, '').trim();
+    return s.replace(/(Dr\.?)|(Prof\.?)|(Professor)/, '').trim();
 };
 
 /**
@@ -244,6 +249,12 @@ getTree(function(tree) {
 
     // Parse the CSV file
     getUsersFromCSV(function(users) {
+
+        // Prep the users
+        _.each(users, function(user) {
+            user.preppedDisplayName = user.displayName ? prep(user.displayName) : '';
+            user.preppedCn = user.cn ? prep(user.cn) : '';
+        });
 
         // Start processing nodes
         visitNode(tree, users, tree);

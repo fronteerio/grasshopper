@@ -22,6 +22,9 @@
  * ingested into the system
  */
 
+// Always work in UTC
+process.env.TZ = 'UTC';
+
 var _ = require('lodash');
 var csv = require('csv');
 var fs = require('fs');
@@ -173,6 +176,12 @@ var generateTree = function(records) {
             })
             .flatten()
 
+            .map(function(person) {
+                // Split again on ' & '
+                return person.split(' & ');
+            })
+            .flatten()
+
             // Trim off leading and trailing whitespace
             .map(function(person) {
                 return person.trim().replace(/,/g, '');
@@ -227,6 +236,7 @@ var mergeSubjects = function(tree) {
             _.each(subjectsByName, function(subjects, subjectName) {
                 course.nodes[subjectName] = {
                     'id': subjectName,
+                    'oldIds': _.pluck(subjects, 'id'),
                     'type': 'subject',
                     'name': subjectName,
                     'nodes': {}

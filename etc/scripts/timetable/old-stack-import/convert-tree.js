@@ -22,6 +22,9 @@
  * This script will convert a regular tree into a structure that can be imported into Grasshopper
  */
 
+// Always work in UTC
+process.env.TZ = 'UTC';
+
 var _ = require('lodash');
 var fs = require('fs');
 var util = require('util');
@@ -110,7 +113,7 @@ var _convertSeries = function(node) {
                 'start': eventNode.start,
                 'end': eventNode.end,
                 'location': eventNode.location,
-                'organisers': _.map(node.people, function(person) {
+                'organisers': _.map(eventNode.people, function(person) {
                     var organiser = {};
                     if (_.isObject(person)) {
                         organiser.displayName = person.displayName;
