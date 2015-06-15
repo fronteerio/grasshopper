@@ -77,6 +77,7 @@ var _convertOrgUnit = function(node) {
         'type': node.type,
         'displayName': node.name,
         'externalId': util.format('%s-%s', node.type, node.id),
+        'metadata': node.data,
         'published': false,
         'children': [],
         'series': []
