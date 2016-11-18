@@ -52,8 +52,6 @@ var parser = csv.parse({'trim': true}, function(err, userRows) {
         console.log('Generated clean_users.csv with %d users in it', properUsers.length);
         process.exit(0);
     });
-
-
 });
 
 fs.createReadStream(process.argv[2]).pipe(parser);
